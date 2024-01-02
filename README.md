@@ -4,6 +4,7 @@ Application for 2FA demo.
   -  login
   -  register
   -  verifyTotp
+  -  confrim-email
 ### Dependencies
   - Spring Security
   - Spring Web
