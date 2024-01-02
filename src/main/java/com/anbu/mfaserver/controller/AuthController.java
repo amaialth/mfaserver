@@ -1,5 +1,6 @@
 package com.anbu.mfaserver.controller;
 
+import com.anbu.mfaserver.exception.InvalidTokenException;
 import com.anbu.mfaserver.model.LoginRequest;
 import com.anbu.mfaserver.model.MfaVerificationRequest;
 import com.anbu.mfaserver.model.MfaVerificationResponse;
@@ -12,10 +13,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @CrossOrigin
 @RestController
@@ -87,5 +85,18 @@ public class AuthController {
                     .build();
         }
         return ResponseEntity.ok(mfaVerificationResponse);
+    }
+
+    @GetMapping("/confirm-email")
+    public ResponseEntity<?> confirmEmail(@RequestParam("token") String token) throws InvalidTokenException {
+        try{
+            if(userService.verifyUser(token)){
+                return ResponseEntity.ok("Your email has been successfully verified.");
+            } else {
+                return ResponseEntity.ok("User details not found. Please login and regenerate the confirmation link.");
+            }
+        } catch (InvalidTokenException e){
+            return ResponseEntity.ok("Link expired or token already verified.");
+        }
     }
 }

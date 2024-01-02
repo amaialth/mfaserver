@@ -25,7 +25,7 @@ public class AppSecurityConfig {
                 .csrf(csrf-> csrf.disable())
                 .sessionManagement(session-> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth-> auth
-                        .requestMatchers("/error**","/register**","/login**","/verifyTotp**").permitAll()
+                        .requestMatchers("/error**","confirm-email","/register**","/login**","/verifyTotp**").permitAll()
                         .anyRequest().authenticated()
                 )
                .build();

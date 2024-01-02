@@ -6,3 +6,15 @@ spring:
       host: localhost
       port: 27017
       database: mfa-server
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: anbuathypathy@gmail.com
+    password: "sptp ettc qjiv xegx"
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            required: true
+            enable: true

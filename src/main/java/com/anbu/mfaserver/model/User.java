@@ -30,6 +30,7 @@ public class User {
     private String firstName;
     private String lastName;
     private boolean active;
+    private boolean accountVerified;
     @DBRef
     private Set<Role> roles = new HashSet<>();
 }
