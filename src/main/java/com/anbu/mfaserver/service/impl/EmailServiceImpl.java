@@ -36,7 +36,7 @@ public class EmailServiceImpl implements EmailService {
                         "</html>"
                 , true);
 
-        sender.send(message);
+        //sender.send(message);
     }
 
     private String generateConfirmationLink(String token){

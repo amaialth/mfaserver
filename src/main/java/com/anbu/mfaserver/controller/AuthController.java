@@ -5,6 +5,7 @@ import com.anbu.mfaserver.model.LoginRequest;
 import com.anbu.mfaserver.model.MfaVerificationRequest;
 import com.anbu.mfaserver.model.MfaVerificationResponse;
 import com.anbu.mfaserver.model.User;
+import com.anbu.mfaserver.service.JWTService;
 import com.anbu.mfaserver.service.UserService;
 import dev.samstevens.totp.exceptions.QrGenerationException;
 import org.springframework.http.ResponseEntity;
@@ -15,15 +16,19 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.text.ParseException;
+
 @CrossOrigin
 @RestController
 public class AuthController {
 
     private final UserService userService;
+    private final JWTService jwtService;
     private final AuthenticationProvider authenticationProvider;
 
-    public AuthController(UserService userService, AuthenticationProvider authenticationProvider) {
+    public AuthController(UserService userService, JWTService jwtService, AuthenticationProvider authenticationProvider) {
         this.userService = userService;
+        this.jwtService = jwtService;
         this.authenticationProvider = authenticationProvider;
     }
 
@@ -69,19 +74,21 @@ public class AuthController {
     }
 
     @PostMapping("/verifyTotp")
-    public ResponseEntity<?> verifyTotp(@Validated @RequestBody MfaVerificationRequest request) {
+    public ResponseEntity<?> verifyTotp(@Validated @RequestBody MfaVerificationRequest request) throws ParseException {
         MfaVerificationResponse mfaVerificationResponse = MfaVerificationResponse.builder()
                 .username(request.getUsername())
                 .tokenValid(Boolean.FALSE)
                 .message("Token is not Valid. Please try again.")
                 .build();
+
         // Validate the OTP
         if(userService.verifyTotp(request.getTotp(), request.getUsername())){
+            //GENERATE JWT
             mfaVerificationResponse = MfaVerificationResponse.builder()
                     .username(request.getUsername())
                     .tokenValid(Boolean.TRUE)
                     .message("Token is valid")
-                    .jwt("DUMMYTOKEN")
+                    .jwt(jwtService.generateJwt(request.getUsername()))
                     .build();
         }
         return ResponseEntity.ok(mfaVerificationResponse);
